@@ -1,3 +1,23 @@
+#include <QGuiApplication>
+#include <QEvent>
+#include <QFocusEvent>
+#include <QInputMethod>
+
+class VirtualKeyboardEventFilter : public QObject {
+    Q_OBJECT
+public:
+    VirtualKeyboardEventFilter(QObject *parent = nullptr) : QObject(parent) {}
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        if (event->type() == QEvent::FocusIn) {
+            QGuiApplication::inputMethod()->show();
+        }
+        return QObject::eventFilter(obj, event);
+    }
+};
+
+
 // Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
@@ -3764,6 +3784,9 @@ void MainWindow::qtvUserCurrentChanged(const QModelIndex &, const QModelIndex &)
 }
 
 void MainWindow::updateChatBar() {
+    qteChat->setAttribute(Qt::WA_InputMethodEnabled, true);
+    static VirtualKeyboardEventFilter *vkFilter = new VirtualKeyboardEventFilter(this);
+    qteChat->installEventFilter(vkFilter);
 	User *p    = pmModel->getUser(qtvUsers->currentIndex());
 	Channel *c = pmModel->getChannel(qtvUsers->currentIndex());
 
@@ -4190,3 +4213,4 @@ void MainWindow::on_muteCuePopup_triggered() {
 		Global::get().s.bTxMuteCue = false;
 	}
 }
+#include "MainWindow.moc"
