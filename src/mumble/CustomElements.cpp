@@ -19,6 +19,8 @@
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
 #include <QtWidgets/QScrollBar>
+#include <QProcess>
+#include <QFocusEvent>
 
 LogTextBrowser::LogTextBrowser(QWidget *p) : QTextBrowser(p) {
 }
@@ -38,14 +40,33 @@ bool LogTextBrowser::isScrolledToBottom() {
 
 
 void ChatbarTextEdit::focusInEvent(QFocusEvent *qfe) {
-	inFocus(true);
-	QTextEdit::focusInEvent(qfe);
+    qDebug() << "focusInEvent triggered!";
+    inFocus(true);
+    QTextEdit::focusInEvent(qfe);
+
+    QProcess::startDetached("dbus-send", QStringList()
+        << "--session"
+        << "--dest=org.onboard.Onboard"
+        << "--type=method_call"
+        << "/org/onboard/Onboard/Keyboard"
+        << "org.onboard.Onboard.Keyboard.Show");
 }
 
+
+
 void ChatbarTextEdit::focusOutEvent(QFocusEvent *qfe) {
-	inFocus(false);
-	QTextEdit::focusOutEvent(qfe);
+    qDebug() << "focusOutEvent triggered!";
+    inFocus(false);
+    QTextEdit::focusOutEvent(qfe);
+
+    QProcess::startDetached("dbus-send", QStringList()
+        << "--session"
+        << "--dest=org.onboard.Onboard"
+        << "--type=method_call"
+        << "/org/onboard/Onboard/Keyboard"
+        << "org.onboard.Onboard.Keyboard.Hide");
 }
+
 
 void ChatbarTextEdit::inFocus(bool focus) {
 	if (focus) {

@@ -11,6 +11,7 @@
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QTextEdit>
 
+
 class LogTextBrowser : public QTextBrowser {
 private:
 	Q_OBJECT
