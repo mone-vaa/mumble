@@ -839,6 +839,9 @@ int main(int argc, char **argv) {
 
 	// Only start deleting items once all pending events have been processed (Audio::stop deletes the audio
 	// input and output)
+	
+	QProcess::execute("pkill", QStringList() << "onboard");
+	
 	Audio::stop();
 
 	delete srpc;
